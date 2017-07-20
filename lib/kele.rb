@@ -1,12 +1,13 @@
 require 'httparty'
+require 'json'
 
 class Kele
   include HTTParty
+  base_uri 'https://www.bloc.io/api/v1'
 
   def initialize(email, password)
-    
     post_response  = self.class.post(
-      base_api_endpoint("sessions"),
+      '/sessions',
       body: {
         :email => email,
         :password => password
@@ -17,12 +18,17 @@ class Kele
     raise "Invalid Email or Password. Try Again." if post_response.code == 404
 
     @auth_token = post_response["auth_token"]
-
   end
 
-  private
-  def base_api_endpoint(end_point)
-    "https://www.bloc.io/api/v1/#{end_point}"
+  def get_me
+    get_response = self.class.get(
+      '/users/me',
+      headers:{
+        :content_type =>'application/json',
+        :authorization => @auth_token
+      })
+
+    @user_data = JSON.parse(get_response.body)
   end
 
 end
