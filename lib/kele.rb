@@ -21,14 +21,33 @@ class Kele
   end
 
   def get_me
-    get_response = self.class.get(
+    get_user = self.class.get(
       '/users/me',
       headers:{
         :content_type =>'application/json',
         :authorization => @auth_token
       })
 
-    @user_data = JSON.parse(get_response.body)
+    @user_data = JSON.parse(get_user.body)
+  end
+
+  def get_mentor_availability(mentor_id = nil)
+
+    if mentor_id == nil
+      my_mentor_id = @user_data["current_enrollment"]["mentor_id"]
+    else
+      my_mentor_id = mentor_id
+    end
+
+    get_mentor = self.class.get(
+      "/mentors/#{my_mentor_id}/student_availability",
+      headers:{
+        :content_type => 'application/json',
+        :authorization => @auth_token
+      })
+
+    @mentor_availability = JSON.parse(get_mentor.body)
+
   end
 
 end
