@@ -1,8 +1,11 @@
 require 'httparty'
 require 'json'
+require './lib/roadmap'
 
 class Kele
   include HTTParty
+  include Roadmap
+
   base_uri 'https://www.bloc.io/api/v1'
 
   def initialize(email, password)
@@ -32,7 +35,6 @@ class Kele
   end
 
   def get_mentor_availability(mentor_id = nil)
-
     if mentor_id == nil
       my_mentor_id = @user_data["current_enrollment"]["mentor_id"]
     else
@@ -47,7 +49,6 @@ class Kele
       })
 
     @mentor_availability = JSON.parse(get_mentor.body)
-
   end
 
 end
