@@ -21,7 +21,8 @@ class Kele
     raise "Invalid Email or Password. Try Again." if post_response.code == 404
 
     @auth_token = post_response["auth_token"]
-    @user = post_response["user"]["email"]
+    @user_email = post_response["user"]["email"]
+    @user_enrollment_id = post_response["user"]["id"]
   end
 
   def get_me
@@ -84,7 +85,7 @@ class Kele
   end
 
 
-  def create_message(sender=@user, recipient_id, token, subject, message)
+  def create_message(sender=@user_email, recipient_id, token, subject, message)
     create_message = self.class.post(
       "/messages",
       body: {
@@ -101,6 +102,25 @@ class Kele
 
     p create_message
     puts create_message.body
+  end
+
+  def create_submission(assignment_branch, assignment_commit_link, checkpoint_id, comment=nil, enrollment_id)
+    submission = self.class.post(
+    "/checkpoint_submissions",
+    body: {
+      :assignment_branch => assignment_branch,
+      :assignment_commit_link => assignment_commit_link,
+      :checkpoint_id => checkpoint_id,
+      :comment => comment,
+      :enrollment_id => enrollment_id
+    },
+    headers: {
+      :content_type => 'application/json',
+      :authorization => @auth_token
+    })
+
+    p submission
+    puts submission.body
   end
 
 end
