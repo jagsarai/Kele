@@ -22,7 +22,6 @@ class Kele
 
     @auth_token = post_response["auth_token"]
     @user_email = post_response["user"]["email"]
-    @user_enrollment_id = post_response["user"]["id"]
   end
 
   def get_me
@@ -104,7 +103,9 @@ class Kele
     puts create_message.body
   end
 
-  def create_submission(assignment_branch, assignment_commit_link, checkpoint_id, comment=nil, enrollment_id)
+  def create_submission(assignment_branch, assignment_commit_link, checkpoint_id, comment=nil)
+    @enrollment_id = self.get_me["id"]
+
     submission = self.class.post(
     "/checkpoint_submissions",
     body: {
@@ -112,10 +113,9 @@ class Kele
       :assignment_commit_link => assignment_commit_link,
       :checkpoint_id => checkpoint_id,
       :comment => comment,
-      :enrollment_id => enrollment_id
+      :enrollment_id => @enrollment_id
     },
     headers: {
-      :content_type => 'application/json',
       :authorization => @auth_token
     })
 
